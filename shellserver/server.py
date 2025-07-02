@@ -7,7 +7,12 @@ that executes shell commands and returns their output.
 from mcp.server.fastmcp import FastMCP
 import subprocess
 import asyncio
+from mcp.server.fastmcp import FastMCP
+from kubernetes import config
+from subprocess import run, PIPE, CalledProcessError
 
+# Load your kubeconfig (used by kubectl) to connect to the cluster
+config.load_kube_config()
 # Create an MCP server instance
 mcp = FastMCP("TerminalServer")
 
@@ -44,6 +49,36 @@ async def call_terminal(command: str) -> dict:
             'output': '',
             'error': str(e)
         }
+
+@mcp.tool(description="Run kubectl commands")
+def run_kubectl_command(command: str) -> str:
+    """
+    Run a kubectl command on the local system.
+    param command: The kubectl command to run (e.g., 'get pods -n default').
+    return: The output or error from the kubectl command.
+    """
+    try:
+        # Split the command string into a list for subprocess
+        cmd_list = ["kubectl"] + command.split()
+        result = run(cmd_list, capture_output=True, text=True, check=True)
+        return result.stdout
+    except CalledProcessError as e:
+        return f"Error: {e.stderr}"
+    
+@mcp.tool(description="Run helm commands")
+def run_helm_command(command: str) -> str:
+    """
+    Run a helm command on the local system.
+    param command: The kubehelmctl command to run (e.g., 'list -n namespace, upgrade').
+    return: The output or error from the helm command.
+    """
+    try:
+        # Split the command string into a list for subprocess
+        cmd_list = ["helm"] + command.split()
+        result = run(cmd_list, capture_output=True, text=True, check=True)
+        return result.stdout
+    except CalledProcessError as e:
+        return f"Error: {e.stderr}"
 
 @mcp.resource("file:///mcpreadme")
 def get_mcp_readme() -> str:
