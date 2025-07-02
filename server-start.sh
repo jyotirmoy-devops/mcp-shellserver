@@ -1,0 +1,1 @@
+docker run -d --name shellserver-mcp -p 8000:8000 -v C:/Users/jnath/.kube:/root/.kube:ro shellserver-mcp:2.0

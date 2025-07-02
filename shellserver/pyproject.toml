@@ -6,5 +6,8 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "kubernetes>=33.1.0",
+    "langchain>=0.3.26",
+    "langgraph>=0.5.0",
     "mcp[cli]>=1.10.1",
+    "openai>=1.93.0",
 ]
