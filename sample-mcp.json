@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "TerminalServer": {
+      "command": "uv",
+      "args": ["--directory", "C:\\Users\\jnath\\Documents\\Projects\\mcp-project\\shellserver", "run", "local-server.py"]
+    },  
+
+    "docker-server":{
+    "command": "docker",
+    "args": ["run", "-i", "--rm", "--init", "-e", "DOCKER_CONTAINER=true", "-v", "C:/Users/jnath/.kube:/root/.kube:ro", "shellserver-mcp:4.0"]
+    }
+  }
+}

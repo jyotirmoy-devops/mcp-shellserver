@@ -10,51 +10,19 @@ import asyncio
 from mcp.server.fastmcp import FastMCP
 from kubernetes import config
 from subprocess import run, PIPE, CalledProcessError
+import requests
 
 # Load your kubeconfig (used by kubectl) to connect to the cluster
 config.load_kube_config()
 # Create an MCP server instance
 mcp = FastMCP("TerminalServer")
 
-@mcp.tool()
-async def call_terminal(command: str) -> dict:
-    """
-    Run a terminal command asynchronously and return its output as a dictionary.
-
-    Args:
-        command (str): The shell command to execute.
-    Returns:
-        dict: {
-            'success': bool,         # True if command succeeded, False otherwise
-            'output': str,           # Standard output from the command
-            'error': str | None      # Error message or None
-        }
-    """
-    try:
-        process = await asyncio.create_subprocess_shell(
-            command,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
-        )
-        stdout, stderr = await process.communicate()
-        success = process.returncode == 0
-        return {
-            'success': success,
-            'output': stdout.decode().strip(),
-            'error': None if success else stderr.decode().strip()
-        }
-    except Exception as e:
-        return {
-            'success': False,
-            'output': '',
-            'error': str(e)
-        }
 
 @mcp.tool(description="Run kubectl commands")
 def run_kubectl_command(command: str) -> str:
     """
-    Run a kubectl command on the local system.
-    param command: The kubectl command to run (e.g., 'get pods -n default').
+     Use this tool to access Kubernetes cluster information via kubectl commands. It supports commands like 'kubectl get pods', 'kubectl get nodes', 'kubectl describe svc', and other read-only Kubernetes queries. Use this tool when the user asks about Kubernetes clusters, nodes, pods, deployments, services, namespaces, or logs. This is the primary interface for querying Kubernetes cluster status and resource information.
+     param command: The kubectl command to run (e.g., 'get pods -n default').
     return: The output or error from the kubectl command.
     """
     try:
